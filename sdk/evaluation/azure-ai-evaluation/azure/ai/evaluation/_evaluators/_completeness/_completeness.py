@@ -67,7 +67,7 @@ class CompletenessEvaluator(PromptyEvaluatorBase):
     # and due to the fact that non-overloaded syntax now causes various parsing issues that
     # we don't want to deal with.
     @overload  # type: ignore
-    def __call__(self, *, response: str, ground_truth: str) -> Dict[str, float]:
+    def __call__(self, *, response: str, ground_truth: str, threshold: float = 0.5) -> Dict[str, float]:
         """
         Evaluate completeness.
 
@@ -95,4 +95,11 @@ class CompletenessEvaluator(PromptyEvaluatorBase):
         :return: The completeness score.
         :rtype: Dict[str, float]
         """
-        return super().__call__(*args, **kwargs)
+        completeness_result = super().__call__(*args, **kwargs)
+        if not isinstance(completeness_result, dict) or not "response_completeness" in completeness_result:
+            raise Exception("Completeness Result is invalid") # this might not be needed
+        threshold = kwargs.get("threshold", 0.5)
+        completeness_score = completeness_result.get("response_completeness")
+        completeness_result["is_response_complete"] = completeness_score >= threshold
+        return completeness_result
+
