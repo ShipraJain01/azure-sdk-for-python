@@ -110,7 +110,7 @@ class CompletenessEvaluator(PromptyEvaluatorBase):
         :return: The completeness score.
         :rtype: Dict[str, Union[str, bool, float]]
         """
-        if kwargs.get("threshold", None) is None:
+        if kwargs.get("threshold", None) is None and kwargs.get("conversation", None) is None:
             kwargs["threshold"] = 3
 
         completeness_result = super().__call__(*args, **kwargs)
